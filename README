@@ -1,0 +1,172 @@
+This is to build android sdcard images for following SBC's:
+rpi4b  ( Raspberry Pi 4B )
+radxa  ( Rock Pi 4B plus )
+rk3328 ( Renegade ROC-RK3328-CC )
+tinker ( ASUS TinkerBoard )
+
+Steps to build android sdcard images:
+
+1. git clone https://github.com/philipchen888/build-android-4SBCs.git
+   sudo apt install adb
+
+2. cd ~/build-android-4SBCs/rpi4b
+   Download from https://konstakang.com/devices/rpi4/AOSP13
+   AOSP13-20230615-KonstaKANG-rpi4.zip
+   AOSP13-20230615-KonstaKANG-rpi4-ota.zip
+   unzip ~/Downloads/AOSP13-20230615-KonstaKANG-rpi4.zip
+
+   sudo dd if=./AOSP13-20230615-KonstaKANG-rpi4.img of=/dev/sda bs=4096 conv=notrunc,fsync
+   Eject sdcard, plugin sdcard again.
+   Plugin USB memory stick to host PC.
+   cp ~/Downloads/AOSP13-20230615-KonstaKANG-rpi4-ota.zip /media/$USER/62B3-9D15/
+   sync
+   Eject USB memory stick, and plug it to SBC.
+   Boot to TWRP recovery. Settings -> System -> Raspberry Pi settings -> Reboot to recovery -> F5 -> power on.
+   Install AOSP13-20230615-KonstaKANG-rpi4-ota.zip from your selected storage.
+   Wipe -> Factory reset!
+   Boot out of recovery. Simply selecting reboot to system option in TWRP.
+   
+   Enable sound: Settings -> System -> Raspberry Pi settings -> Audio device (HDMI0).
+
+   Download Google Play Store from https://sourceforge.net/projects/nikgapps/
+   wget https://sourceforge.net/projects/nikgapps/files/Config-Releases/NikGapps-T/13-Aug-2023/NikGapps-Basic-arm64-13-20230813.zip/download
+   mv download NikGapps-Basic-arm64-13-20230813.zip
+   Plugin USB memory stick to host PC.
+   cp ./NikGapps-Basic-arm64-13-20230813.zip /media/$USER/62B3-9D15/
+   sync
+   Eject USB memory stick, and plug it to SBC.
+   Boot to TWRP recovery. Settings -> System -> Raspberry Pi settings -> Reboot to recovery -> F5 -> power on.
+   Install NikGapps-Basic-arm64-13-20230813.zip from your selected storage.
+   Wipe -> Factory reset!
+   Boot out of recovery. Simply selecting reboot to system option in TWRP.
+   When run Google Play Store, Got the device is not certified to run Google apps.
+   See https://storage.googleapis.com/play_public/supported_devices.html
+   Download Device ID apk from https://www.apkmirror.com/apk/evozi/device-id/device-id-1-3-2-release/
+   cp ~/Downloads/'com.evozi.deviceid_1.3.2-8_minAPI14(nodpi).apk' deviceid.apk
+   Install deviceid.apk
+   Open the Device ID app, and it will display the code for Google Service Framework (GSF). Click on it and “copy” the code. 
+   Open https://google.com/android/uncertified on your Raspberry Pi and paste the GSF code. After that, click on “Register“
+   Wait for 20 minutes.
+   Open Google Play Store -> sign in. Install YouTube, Solitaire etc.
+
+3. cd ~/build-android-4SBCs/radxa
+   Download from https://wiki.radxa.com/Rockpi4/downloads
+   android: select Android 10
+   tvbox: select Android 9 TV
+   wget https://rock.sh/rockpi4b-android10-gpt-download/ROCKPI-4AB-2020-10-15-11-14-gpt.zip
+   unzip ROCKPI-4AB-2020-10-15-11-14-gpt.zip
+
+   sudo dd if=./ROCKPI-4AB-2020-10-15-11-14-gpt.img of=/dev/sda bs=4096 conv=notrunc,fsync
+
+4. cd ~/build-android-4SBCs/rk3328
+   Download from http://share.loverpi.com/board/libre-computer-project/libre-computer-board-roc-rk3328-cc/image/android
+   wget http://share.loverpi.com/board/libre-computer-project/libre-computer-board-roc-rk3328-cc/image/android/ROC-RK3328-CC_Android7.1.2_180518.img.xz
+   unxz ROC-RK3328-CC_Android7.1.2_180518.img.xz
+
+   sudo dd if=./ROC-RK3328-CC_Android7.1.2_180518.img of=/dev/sda bs=4096 conv=notrunc,fsync
+  
+   Install Google Play Store. Go to https://opengapps.org/ select ARM64 7.1 mini, download
+   unzip -d ./gapps open_gapps-arm64-7.1-mini-20220215.zip
+   cd ./gapps/Core/
+   Do the same steps with tinker to install Google Play Store.
+   Power down and up again. 
+   Google Play Store -> 3 dots -> Settings -> About -> not certified.
+   Download Device ID apk from https://www.apkmirror.com/apk/evozi/device-id/device-id-1-3-2-release/
+   cp ~/Downloads/'com.evozi.deviceid_1.3.2-8_minAPI14(nodpi).apk' deviceid.apk
+   Install deviceid.apk
+   Open the Device ID app, and it will display the code for Google Service Framework (GSF). Click on it and “copy” the code.
+   Open https://google.com/android/uncertified on your rk3328 and paste the GSF code. After that, click on “Register“ -> Got denied.
+ 
+5. cd ~/build-android-4SBCs/tinker
+   Download from https://tinker-board.asus.com/download-list.html?product=tinker-board
+   wget https://dlcdnets.asus.com/pub/ASUS/mb/Embedded_IPC/TinkerBoard_S/Tinker_Board-AndroidN-V14.4.0.14-20200711.zip
+   unzip Tinker_Board-AndroidN-V14.4.0.14-20200711.zip ( Android 7.14 )
+  
+   sudo dd if=./Tinker_Board-AndroidN-V14.4.0.14-20200711.img of=/dev/sda bs=4096 conv=notrunc,fsync
+
+   Install Google Play Store. Go to https://opengapps.org/ select ARM 7.1 mini, download
+   unzip -d ./gapps open_gapps-arm-7.1-mini-20220215.zip
+   cd ./gapps/Core/
+   sudo apt install plzip
+   plzip -d googlepartnersetup-all.tar.lz
+   plzip -d gmscore-arm.tar.lz
+   plzip -d gsfcore-all.tar.lz
+   plzip -d gsflogin-all.tar.lz
+   plzip -d vending-arm.tar.lz
+   tar -xvf googlepartnersetup-all.tar
+   tar -xvf gmscore-arm.tar
+   tar -xvf gsfcore-all.tar
+   tar -xvf gsflogin-all.tar
+   tar -xvf vending-arm.tar
+   cd ../../
+   cp ./gapps/Core/googlepartnersetup-all/nodpi/priv-app/GooglePartnerSetup/GooglePartnerSetup.apk .
+   cp ./gapps/Core/gmscore-arm/nodpi/priv-app/PrebuiltGmsCore/PrebuiltGmsCore.apk .
+   cp ./gapps/Core/gsfcore-all/nodpi/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk .
+   cp ./gapps/Core/gsflogin-all/nodpi/priv-app/GoogleLoginService/GoogleLoginService.apk .
+   cp ./gapps/Core/vending-arm/nodpi/priv-app/Phonesky/Phonesky.apk .
+   adb push these 5 apks to tinker /system/priv-app and adb reboot tinker. 
+
+Plugin ethernet cable to RK3328.
+Plugin sdcard to SBC.
+After setting up android, turn on developer mode.
+Settings -> About tablet -> hit build number several times
+Settings -> System -> Advanced -> Developer options -> Open net adb
+Power -> restart
+Find ip: Settings -> Network & Internet -> Tap on the Wi-Fi you are connected to ->
+Advanced -> IP address 
+
+RK3328 turn on developer mode.
+Developer options -> Root access (ADB only), ADB over network
+Tinker just turn on developer mode is good enough.
+RK3328 power down, click keyboard F5 or keyboard power key (with circle sign and pc).
+
+adb devices -l
+adb connect 192.168.86.xxx
+adb root
+adb connect 192.168.86.xxx
+adb shell
+du -h /system
+mount -o rw,remount /system
+exit
+
+To install apks:
+adb push helloworld.apk /sdcard
+adb push happybirthday.apk /sdcard
+adb push diceroller.apk /sdcard
+adb push drawing.apk /sdcard
+adb push drawshape.apk /sdcard
+adb push kaleidoscope.apk /sdcard
+adb push myanalogclock.apk /sdcard
+adb push randomsong.apk /sdcard
+adb shell
+cd /system/priv-app
+ln -s /sdcard/helloworld.apk .
+ln -s /sdcard/happybirthday.apk .
+ln -s /sdcard/diceroller.apk .
+ln -s /sdcard/drawing.apk .
+ln -s /sdcard/drawshape.apk .
+ln -s /sdcard/kaleidoscope.apk .
+ln -s /sdcard/myanalogclock.apk .
+ln -s /sdcard/randomsong.apk .
+exit
+adb install -r helloworld.apk
+adb install -r happybirthday.apk
+adb install -r diceroller.apk
+adb install -r drawing.apk
+adb install -r drawshape.apk
+adb install -r kaleidoscope.apk
+adb install -r myanalogclock.apk
+adb install -r randomsong.apk
+adb shell
+mount -o ro,remount /system
+exit
+
+To uninstall apks:
+adb uninstall com.example.helloworld
+adb uninstall com.example.happybirthday
+adb uninstall com.example.diceroller
+adb uninstall com.example.drawing
+adb uninstall com.example.drawshape
+adb uninstall com.example.kaleidoscope
+adb uninstall com.example.myanalogclock
+adb uninstall com.example.randomsong
